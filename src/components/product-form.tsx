@@ -29,9 +29,15 @@ type Props = {
   close: () => void
   submit: (values: Product) => void
   defaultValues?: Product
+  deleteProduct?: () => void
 }
 
-export function ProductForm({ close, submit, defaultValues }: Props) {
+export function ProductForm({
+  close,
+  submit,
+  defaultValues,
+  deleteProduct,
+}: Props) {
   const form = useForm<Product>({
     resolver: zodResolver(productSchema),
     defaultValues,
@@ -70,11 +76,25 @@ export function ProductForm({ close, submit, defaultValues }: Props) {
             </>
           )}
         />
-        <div className="flex items-center justify-end space-x-2">
-          <Button variant="link" onClick={close}>
-            Cancel
-          </Button>
-          <Button type="submit">Save</Button>
+        <div className="flex items-center justify-between">
+          <div>
+            {deleteProduct && (
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  deleteProduct()
+                }}
+              >
+                Delete
+              </Button>
+            )}
+          </div>
+          <div>
+            <Button variant="link" onClick={close}>
+              Cancel
+            </Button>
+            <Button type="submit">Save</Button>
+          </div>
         </div>
       </form>
     </Form>

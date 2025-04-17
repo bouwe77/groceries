@@ -64,6 +64,10 @@ const UpdateProduct = ({ product }: { product: Product }) => {
             setOpen(false)
           }}
           defaultValues={product}
+          deleteProduct={() => {
+            console.log("delete")
+            setOpen(false)
+          }}
         />
       </DialogContent>
     </Dialog>
