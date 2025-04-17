@@ -32,6 +32,7 @@ const AddProduct = () => {
         <ProductForm
           close={() => setOpen(false)}
           submit={(values) => {
+            console.log(values);
             setOpen(false);
           }}
           defaultValues={{ productName: "", status: "To buy" }}
@@ -59,6 +60,7 @@ const UpdateProduct = ({ product }: { product: Product }) => {
         <ProductForm
           close={() => setOpen(false)}
           submit={(values) => {
+            console.log(values);
             setOpen(false);
           }}
           defaultValues={product}
