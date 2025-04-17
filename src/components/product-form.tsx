@@ -1,41 +1,41 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { BigCheckbox } from "./big-checkbox";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { BigCheckbox } from "./big-checkbox"
 
 const productSchema = z.object({
   productName: z.string().min(1),
   status: z.enum(["In stock", "To buy", "Just bought"]),
-});
+})
 
-export type Product = z.infer<typeof productSchema>;
+export type Product = z.infer<typeof productSchema>
 
 export const isInStock = (status: Product["status"]) =>
-  status === "In stock" ? true : false;
+  status === "In stock" ? true : false
 
 export const haveToBuy = (status: Product["status"]) =>
-  ["To buy", "Just bought"].includes(status);
+  ["To buy", "Just bought"].includes(status)
 
 type Props = {
-  close: () => void;
-  submit: (values: Product) => void;
-  defaultValues?: Product;
-};
+  close: () => void
+  submit: (values: Product) => void
+  defaultValues?: Product
+}
 
 export function ProductForm({ close, submit, defaultValues }: Props) {
   const form = useForm<Product>({
     resolver: zodResolver(productSchema),
     defaultValues,
-  });
+  })
 
   return (
     <Form {...form}>
@@ -78,5 +78,5 @@ export function ProductForm({ close, submit, defaultValues }: Props) {
         </div>
       </form>
     </Form>
-  );
+  )
 }

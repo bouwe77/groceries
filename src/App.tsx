@@ -1,23 +1,23 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Input } from "@/components/ui/input"
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { ThemeToggle } from "./components/theme-toggle";
+} from "@/components/ui/dialog"
+import { ThemeToggle } from "./components/theme-toggle"
 import {
   isInStock,
   haveToBuy,
   Product,
   ProductForm,
-} from "./components/product-form";
-import { BigCheckbox } from "./components/big-checkbox";
-import React from "react";
+} from "./components/product-form"
+import { BigCheckbox } from "./components/big-checkbox"
+import React from "react"
 
 const AddProduct = () => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -32,18 +32,18 @@ const AddProduct = () => {
         <ProductForm
           close={() => setOpen(false)}
           submit={(values) => {
-            console.log(values);
-            setOpen(false);
+            console.log(values)
+            setOpen(false)
           }}
           defaultValues={{ productName: "", status: "To buy" }}
         />
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
 
 const UpdateProduct = ({ product }: { product: Product }) => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -60,31 +60,31 @@ const UpdateProduct = ({ product }: { product: Product }) => {
         <ProductForm
           close={() => setOpen(false)}
           submit={(values) => {
-            console.log(values);
-            setOpen(false);
+            console.log(values)
+            setOpen(false)
           }}
           defaultValues={product}
         />
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
 
 const ProductsList = ({ children }: React.PropsWithChildren) => (
   <div className="grid grid-cols-2 gap-2">{children}</div>
-);
+)
 
 const Products = ({
   products,
   toggleBuy,
 }: {
-  products: Product[];
-  toggleBuy: (product: Product) => void;
+  products: Product[]
+  toggleBuy: (product: Product) => void
 }) => {
-  const [search, setSearch] = React.useState("");
+  const [search, setSearch] = React.useState("")
   const filteredProducts = products.filter((product) =>
-    product.productName.toLowerCase().includes(search.toLowerCase())
-  );
+    product.productName.toLowerCase().includes(search.toLowerCase()),
+  )
 
   return (
     <div>
@@ -110,15 +110,15 @@ const Products = ({
         ))}
       </ProductsList>
     </div>
-  );
-};
+  )
+}
 
 const GroceryList = ({
   products,
   toggleJustBought,
 }: {
-  products: Product[];
-  toggleJustBought: (product: Product) => void;
+  products: Product[]
+  toggleJustBought: (product: Product) => void
 }) => (
   <ProductsList>
     {products.map((product, i) => (
@@ -139,19 +139,19 @@ const GroceryList = ({
       </span>
     ))}
   </ProductsList>
-);
+)
 
 const Tab = ({
   value,
   children,
 }: {
-  value: string;
-  children: React.ReactNode;
+  value: string
+  children: React.ReactNode
 }) => (
   <TabsContent value={value} className="p-2">
     {children}
   </TabsContent>
-);
+)
 
 const App = () => {
   const [products, setProducts] = React.useState<Product[]>([
@@ -161,19 +161,19 @@ const App = () => {
     { productName: "Yoghurt", status: "In stock" },
     { productName: "Fruit", status: "To buy" },
     { productName: "Bier", status: "In stock" },
-  ]);
+  ])
 
-  const productsToBuy = products.filter((p) => haveToBuy(p.status));
+  const productsToBuy = products.filter((p) => haveToBuy(p.status))
 
   const toggleBuy = (product: Product) => {
     setProducts((prev) =>
       prev.map((p) =>
         p.productName === product.productName
           ? { ...p, status: p.status === "In stock" ? "To buy" : "In stock" }
-          : p
-      )
-    );
-  };
+          : p,
+      ),
+    )
+  }
 
   const toggleJustBought = (product: Product) => {
     setProducts((prev) =>
@@ -183,10 +183,10 @@ const App = () => {
               ...p,
               status: p.status === "To buy" ? "Just bought" : "To buy",
             }
-          : p
-      )
-    );
-  };
+          : p,
+      ),
+    )
+  }
 
   return (
     <div className="m-2">
@@ -213,7 +213,7 @@ const App = () => {
         </Tab>
       </Tabs>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
