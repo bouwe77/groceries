@@ -1,0 +1,21 @@
+{
+  "products": [
+    {
+      "productName": "lllll",
+      "status": "To buy",
+      "shops": [
+        "Albert Heijn",
+        "Jumbo"
+      ],
+      "id": "1745334397417"
+    },
+    {
+      "productName": "Bananen",
+      "status": "In stock",
+      "id": "1745240001864",
+      "shops": [
+        "Lidl"
+      ]
+    }
+  ]
+}

@@ -15,9 +15,78 @@ import {
 } from "./components/product-form"
 import { BigCheckbox } from "./components/big-checkbox"
 import React from "react"
+import { Switch } from "@/components/ui/switch"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+
+const productsUrl = "http://localhost:6284/api/products"
+const queryKey = ["products"]
+
+const useUpdateProduct = () => {
+  const queryClient = useQueryClient()
+
+  const mutationUpdateProduct = useMutation({
+    mutationFn: async (product: Product) => {
+      const productWithoutId = { ...product }
+      delete productWithoutId.id
+      const response = await fetch(`${productsUrl}/${product.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(productWithoutId),
+      })
+      return await response.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey })
+    },
+  })
+
+  return mutationUpdateProduct
+}
+
+const useDeleteProduct = () => {
+  const queryClient = useQueryClient()
+
+  const mutationDeleteProduct = useMutation({
+    mutationFn: async (product: Product) => {
+      const response = await fetch(`${productsUrl}/${product.id}`, {
+        method: "DELETE",
+      })
+      return await response.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey })
+    },
+  })
+
+  return mutationDeleteProduct
+}
+
+const useCreateProduct = () => {
+  const queryClient = useQueryClient()
+
+  const mutationCreateProduct = useMutation({
+    mutationFn: async (newProduct: Product) => {
+      const response = await fetch(productsUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newProduct),
+      })
+      return await response.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey })
+    },
+  })
+  return mutationCreateProduct
+}
 
 const AddProduct = () => {
   const [open, setOpen] = React.useState(false)
+  const mutationCreateProduct = useCreateProduct()
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -32,7 +101,7 @@ const AddProduct = () => {
         <ProductForm
           close={() => setOpen(false)}
           submit={(values) => {
-            console.log(values)
+            mutationCreateProduct.mutate(values)
             setOpen(false)
           }}
           defaultValues={{ productName: "", status: "To buy" }}
@@ -44,6 +113,8 @@ const AddProduct = () => {
 
 const UpdateProduct = ({ product }: { product: Product }) => {
   const [open, setOpen] = React.useState(false)
+  const mutationUpdateProduct = useUpdateProduct()
+  const mutationDeleteProduct = useDeleteProduct()
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -60,12 +131,12 @@ const UpdateProduct = ({ product }: { product: Product }) => {
         <ProductForm
           close={() => setOpen(false)}
           submit={(values) => {
-            console.log(values)
+            mutationUpdateProduct.mutate(values)
             setOpen(false)
           }}
           defaultValues={product}
           deleteProduct={() => {
-            console.log("delete")
+            mutationDeleteProduct.mutate(product)
             setOpen(false)
           }}
         />
@@ -105,7 +176,8 @@ const Products = ({
       <ProductsList>
         {filteredProducts.map((product, i) => (
           <span key={i} className="flex items-center m-1">
-            <BigCheckbox
+            <Switch
+              className="mr-2"
               checked={!isInStock(product.status)}
               onCheckedChange={() => toggleBuy(product)}
             />
@@ -158,38 +230,38 @@ const Tab = ({
 )
 
 const App = () => {
-  const [products, setProducts] = React.useState<Product[]>([
-    { productName: "Wortels", status: "To buy" },
-    { productName: "Brood", status: "In stock" },
-    { productName: "Bananen", status: "Just bought" },
-    { productName: "Yoghurt", status: "In stock" },
-    { productName: "Fruit", status: "To buy" },
-    { productName: "Bier", status: "In stock" },
-  ])
+  const {
+    isPending,
+    error,
+    data: products,
+  } = useQuery<Product[]>({
+    queryKey: ["products"],
+    queryFn: async () => {
+      const response = await fetch(productsUrl)
+      return await response.json()
+    },
+  })
+
+  const mutationUpdateProduct = useUpdateProduct()
+
+  if (isPending) return "Loading..."
+
+  if (error) return "An error has occurred: " + error.message
 
   const productsToBuy = products.filter((p) => haveToBuy(p.status))
 
   const toggleBuy = (product: Product) => {
-    setProducts((prev) =>
-      prev.map((p) =>
-        p.productName === product.productName
-          ? { ...p, status: p.status === "In stock" ? "To buy" : "In stock" }
-          : p,
-      ),
-    )
+    mutationUpdateProduct.mutate({
+      ...product,
+      status: product.status === "In stock" ? "To buy" : "In stock",
+    })
   }
 
   const toggleJustBought = (product: Product) => {
-    setProducts((prev) =>
-      prev.map((p) =>
-        p.productName === product.productName
-          ? {
-              ...p,
-              status: p.status === "To buy" ? "Just bought" : "To buy",
-            }
-          : p,
-      ),
-    )
+    mutationUpdateProduct.mutate({
+      ...product,
+      status: product.status === "To buy" ? "Just bought" : "To buy",
+    })
   }
 
   return (
